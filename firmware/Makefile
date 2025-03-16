@@ -1,8 +1,8 @@
 
-all:
+all: bitmaps
 	pio -f -c vim run
 
-upload:
+upload: bitmaps
 	pio -f -c vim run --target upload
 
 clean:
@@ -11,12 +11,15 @@ clean:
 uploadfs:
 	pio -f -c vim run --target uploadfs
 
-update:
+update: bitmaps
 	pio -f -c vim update
 
 fuses:
 	pio run -t fuses
 
-compile_commands:
+compile_commands: bitmaps
 	pio run --target compiledb
+
+bitmaps:
+	python ../bitmaps_generate.py --img-dir=../bitmap_img --bitmaps-header=./include/bitmaps.h
 

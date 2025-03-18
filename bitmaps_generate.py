@@ -85,6 +85,7 @@ out_text = """\
 
 
 files = [f for f in os.listdir(args.img_dir) if os.path.isfile(args.img_dir + "/" + f)]
+files.sort()
 for filename in files:
     res = ""
 

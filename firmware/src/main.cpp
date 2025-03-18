@@ -17,6 +17,7 @@
 DisplayMax7219<CS_PIN, MOSI_PIN, SCK_PIN> disp;
 
 void cycle_bitmap(const int frames_per_cycle, const byte* bmaps, const byte bmaps_num);
+void scroll_bitmap(const int frames_per_cycle, const byte* bmap, const byte bmap_width);
 void draw_bitmap(const byte* bmap);
 
 byte mode = 0;
@@ -30,6 +31,7 @@ void setup() {
 }
 
 #define BITMAPS_AND_SIZE(bmaps_) bmaps_, (sizeof(bmaps_) / disp.NUM_DIGITS)
+#define BITMAP_AND_WIDTH(bmap_)  bmap_, sizeof(bmap_)
 
 void loop() {
     cycle_bitmap(30, BITMAPS_AND_SIZE(HEART_BLINK));
@@ -55,6 +57,31 @@ void cycle_bitmap(const int frames_per_cycle, const byte* bmaps, const byte bmap
     if (frame_counter++ >= frames_per_cycle) {
         frame_counter = 0;
         draw_bitmap(bmaps + disp.NUM_DIGITS * counter++);
+    }
+}
+
+void scroll_bitmap(const int frames_per_cycle, const byte* bmap, const byte bmap_width) {
+    if (counter > bmap_width + disp.NUM_DIGITS)
+        counter = 0;
+
+    if (frame_counter++ >= frames_per_cycle) {
+        frame_counter = 0;
+
+        if (counter == 0) {
+            counter++;
+            return;
+        }
+
+        for (byte i = 0; i < disp.NUM_DIGITS - 1; i++) {
+            disp.buf[i] = disp.buf[i + 1];
+        }
+        if (counter - 1 < bmap_width)
+            disp.buf[disp.NUM_DIGITS - 1] = pgm_read_byte(&bmap[counter - 1]);
+        else
+            disp.buf[disp.NUM_DIGITS - 1] = 0x00;
+
+        disp.update_all();
+        counter++;
     }
 }
 

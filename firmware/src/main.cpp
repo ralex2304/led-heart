@@ -11,7 +11,9 @@ const byte BTN_PIN  = 4;
 
 const byte DEFAULT_BRIGHTNESS = 6;
 
-const int FPS = 30;
+const int FPS = 60;
+
+const byte MODE_NUM = 4;
 
 DisplayMax7219<CS_PIN, MOSI_PIN, SCK_PIN> disp;
 
@@ -19,26 +21,53 @@ void cycle_bitmap(const int frames_per_cycle, const byte* bmaps, const byte bmap
 void scroll_bitmap(const int frames_per_cycle, const byte* bmap, const byte bmap_width);
 void draw_bitmap(const byte* bmap);
 
-byte mode = 0;
 byte counter = 0;
 byte frame_counter = 0;
-
-void setup() {
-    pinMode(BTN_PIN, INPUT_PULLUP);
-
-    disp.begin(DEFAULT_BRIGHTNESS);
-}
 
 #define BITMAPS_AND_SIZE(bmaps_) bmaps_, (sizeof(bmaps_) / disp.NUM_DIGITS)
 #define BITMAP_AND_WIDTH(bmap_)  bmap_, sizeof(bmap_)
 
-void loop() {
-    cycle_bitmap(30, BITMAPS_AND_SIZE(HEART_BLINK));
-    // cycle_bitmap(25, BITMAPS_AND_SIZE(HEART_MINI));
-    // cycle_bitmap(15, BITMAPS_AND_SIZE(HEART_HALVES));
-    // cycle_bitmap(15, BITMAPS_AND_SIZE(HEART_MESSAGES));
+int main() {
+    init();
 
-    delay(1000 / FPS);
+    pinMode(BTN_PIN, INPUT_PULLUP);
+
+    disp.begin(DEFAULT_BRIGHTNESS);
+
+    while (true) {
+        static byte mode = 0;
+
+        switch (mode) {
+            case 0:     cycle_bitmap(60, BITMAPS_AND_SIZE(HEART_BLINK));        break;
+            case 1:     cycle_bitmap(50, BITMAPS_AND_SIZE(HEART_MINI));         break;
+            case 2:     cycle_bitmap(30, BITMAPS_AND_SIZE(HEART_HALVES));       break;
+            case 3:     cycle_bitmap(30, BITMAPS_AND_SIZE(HEART_MESSAGES));     break;
+            default:    mode = 0;                                               break;
+        }
+
+        static bool btn_pressed = false;
+
+        if (!btn_pressed && !digitalRead(BTN_PIN)) {
+            delay(10);
+            if (!digitalRead(BTN_PIN)) {
+                if (++mode == MODE_NUM)
+                    mode = 0;
+
+                btn_pressed = true;
+
+                disp.clear();
+                counter = 0;
+                frame_counter = 0;
+                continue;
+            }
+        } else if (btn_pressed && digitalRead(BTN_PIN)) {
+            delay(10);
+            if (digitalRead(BTN_PIN))
+                btn_pressed = false;
+        }
+
+        delay(1000 / FPS);
+    }
 }
 
 void draw_bitmap(const byte* bmap) {

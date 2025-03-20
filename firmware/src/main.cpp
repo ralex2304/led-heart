@@ -4,15 +4,14 @@
 
 #include "bitmaps.h"
 
-#define CS_PIN      3
-#define MOSI_PIN    0
-#define SCK_PIN     2
-#define BTN_PIN     4
+const byte CS_PIN   = 3;
+const byte MOSI_PIN = 0;
+const byte SCK_PIN  = 2;
+const byte BTN_PIN  = 4;
 
-#define DEFAULT_BRIGHTNESS 6
-#define NUM_MODES          2
+const byte DEFAULT_BRIGHTNESS = 6;
 
-#define FPS 30
+const int FPS = 30;
 
 DisplayMax7219<CS_PIN, MOSI_PIN, SCK_PIN> disp;
 

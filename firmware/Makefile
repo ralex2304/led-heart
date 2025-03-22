@@ -21,5 +21,5 @@ compile_commands: bitmaps
 	pio run --target compiledb
 
 bitmaps:
-	python ../bitmaps_generate.py --img-dir=../bitmap_img --bitmaps-header=./include/bitmaps.h
+	python ../bitmaps_generate.py --img-dir=../bitmap_img --fonts-dir=../bitmap_img/fonts --bitmaps-header=./include/bitmaps.h
 

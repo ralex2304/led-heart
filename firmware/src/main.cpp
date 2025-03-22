@@ -13,12 +13,10 @@ const byte DEFAULT_BRIGHTNESS = 6;
 
 const int FPS = 60;
 
-const byte MODE_NUM = 4;
-
 DisplayMax7219<CS_PIN, MOSI_PIN, SCK_PIN> disp;
 
-void cycle_bitmap(const int frames_per_cycle, const byte* bmaps, const byte bmaps_num);
-void scroll_bitmap(const int frames_per_cycle, const byte* bmap, const byte bmap_width);
+void cycle_bitmap(const byte frames_per_cycle, const byte* bmaps, const byte bmaps_num);
+void scroll_bitmap(const byte frames_per_cycle, const byte* bmap, const byte bmap_width);
 void draw_bitmap(const byte* bmap);
 
 byte counter = 0;
@@ -38,11 +36,12 @@ int main() {
         static byte mode = 0;
 
         switch (mode) {
-            case 0:     cycle_bitmap(60, BITMAPS_AND_SIZE(HEART_BLINK));        break;
-            case 1:     cycle_bitmap(50, BITMAPS_AND_SIZE(HEART_MINI));         break;
-            case 2:     cycle_bitmap(30, BITMAPS_AND_SIZE(HEART_HALVES));       break;
-            case 3:     cycle_bitmap(30, BITMAPS_AND_SIZE(HEART_MESSAGES));     break;
-            default:    mode = 0;                                               break;
+            case 0:     cycle_bitmap( 60, BITMAPS_AND_SIZE(HEART_BLINK));           break;
+            case 1:     scroll_bitmap( 7, BITMAP_AND_WIDTH(FOR_SMBDY_WITH_LOVE));   break;
+            case 2:     cycle_bitmap( 50, BITMAPS_AND_SIZE(HEART_MINI));            break;
+            case 3:     cycle_bitmap( 30, BITMAPS_AND_SIZE(HEART_HALVES));          break;
+            case 4:     cycle_bitmap( 30, BITMAPS_AND_SIZE(HEART_MESSAGES));        break;
+            default:    mode = 0;                                                   break;
         }
 
         static bool btn_pressed = false;
@@ -50,9 +49,7 @@ int main() {
         if (!btn_pressed && !digitalRead(BTN_PIN)) {
             delay(10);
             if (!digitalRead(BTN_PIN)) {
-                if (++mode == MODE_NUM)
-                    mode = 0;
-
+                mode++;
                 btn_pressed = true;
 
                 disp.clear();
@@ -78,7 +75,7 @@ void draw_bitmap(const byte* bmap) {
     disp.update_all();
 }
 
-void cycle_bitmap(const int frames_per_cycle, const byte* bmaps, const byte bmaps_num) {
+void cycle_bitmap(const byte frames_per_cycle, const byte* bmaps, const byte bmaps_num) {
     if (counter >= bmaps_num)
         counter = 0;
 
@@ -88,7 +85,7 @@ void cycle_bitmap(const int frames_per_cycle, const byte* bmaps, const byte bmap
     }
 }
 
-void scroll_bitmap(const int frames_per_cycle, const byte* bmap, const byte bmap_width) {
+void scroll_bitmap(const byte frames_per_cycle, const byte* bmap, const byte bmap_width) {
     if (counter > bmap_width + disp.NUM_DIGITS)
         counter = 0;
 

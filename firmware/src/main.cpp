@@ -9,7 +9,7 @@ const byte MOSI_PIN = 0;
 const byte SCK_PIN  = 2;
 const byte BTN_PIN  = 4;
 
-const byte DEFAULT_BRIGHTNESS = 6;
+const byte DEFAULT_BRIGHTNESS = 1;
 
 const int FPS = 60;
 
